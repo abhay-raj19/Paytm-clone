@@ -4,7 +4,8 @@ const zod = require('zod');
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 
-const { User } = require('../db');
+const { User, Account } = require('../db');
+const { authMiddleware } = require('../middlewares/middleware');
 
 const userRouter = express.Router()
 
@@ -44,6 +45,11 @@ userRouter.post("/signup",async (req,res) => {
   });
    
   const userId = newUser._id;
+
+  await Account.create({
+    userId,
+    balance: 1+ Math.random() * 10000
+  })
   
   //generating the jwt token for newly registered user
   const token =  jwt.sign(userId , process.env.JWT_SECRET);
@@ -55,6 +61,53 @@ userRouter.post("/signup",async (req,res) => {
   })
 
 });
+
+const updateBody = zod.object({
+    password:zod.string().optional(),
+    firstName:zod.string().optional(),
+    lastName:zod.string().optional(),
+})
+
+//updating the specific imnpfmation 
+userRouter.put('/',authMiddleware, async (req,res) => {
+    const { success } = updateBody.safeParse(req.body);
+    if(!success){
+        res.status(403).json({
+            message:'Error while updating the user info',
+        })
+    }
+    await User.updateOne(req.body,{
+        _id:req.userId
+    })
+
+    res.json({
+        message:'updated succesfully'
+    }) 
+});
+
+userRouter.get('/bulk',async (req,res) => {
+    const filterQuery = req.query.filter || "";
+    const users = await User.find({
+        $or: [{
+            firstName: {
+                "$regex": filter
+            }
+        }, {
+            lastName: {
+                "$regex": filter
+            }
+        }]
+    })
+    res.json({
+        user: users.map(user => ({
+            username:user.username,
+            firstName:user.firstName,
+            lastName :user.lastName,
+            _id:user._id
+        }))
+    })
+
+})
 
 
 module.exports = userRouter;
