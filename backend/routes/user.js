@@ -90,11 +90,11 @@ userRouter.get('/bulk',async (req,res) => {
     const users = await User.find({
         $or: [{
             firstName: {
-                "$regex": filter
+                "$regex": filterQuery
             }
         }, {
             lastName: {
-                "$regex": filter
+                "$regex": filterQuery
             }
         }]
     })

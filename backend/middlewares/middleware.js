@@ -5,10 +5,12 @@ require('dotenv').config();
 //middleware function for checking up the user is pre-logged in or not 
 function authMiddleware(req,res,next) {
     //fetching up the authorisation token
-    const authHeader = req.headers.authorisation;
+    const authHeader = req.headers.authorization;
 
     if(!authHeader || !authHeader.startsWith('Bearer')){
-        return res.status(403).json({});
+        return res.status(403).json({
+            msg:"No previoust user exists"
+        });
     }
     const token = authHeader.split(' ')[1];
 
