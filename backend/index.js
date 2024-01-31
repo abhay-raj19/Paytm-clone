@@ -10,7 +10,7 @@ app.use(express.json());
 
 
 //Routed up the main route i.e "api/v1" with rootRouter
-app.use("api/v1",rootRouter)
+app.use("/api/v1",rootRouter)
 
 
 app.listen(process.env.PORT,()=>{

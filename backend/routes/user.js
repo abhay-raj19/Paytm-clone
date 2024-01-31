@@ -43,16 +43,17 @@ userRouter.post("/signup",async (req,res) => {
 	lastName: req.body.lastName,
 	password: req.body.password,    
   });
-   
+  
   const userId = newUser._id;
 
   await Account.create({
     userId,
-    balance: 1+ Math.random() * 10000
+    balance: Math.floor(Math.random() * 10000) + 1
   })
   
   //generating the jwt token for newly registered user
-  const token =  jwt.sign(userId , process.env.JWT_SECRET);
+
+  const token =  jwt.sign({userId}, process.env.JWT_SECRET);
 
   // returned up the jwt token
   res.json({
@@ -69,20 +70,36 @@ const updateBody = zod.object({
 })
 
 //updating the specific imnpfmation 
-userRouter.put('/',authMiddleware, async (req,res) => {
-    const { success } = updateBody.safeParse(req.body);
+userRouter.put('/update',authMiddleware, async (req,res) => {
+    const { success,data } = updateBody.safeParse(req.body);
     if(!success){
         res.status(403).json({
             message:'Error while updating the user info',
+            errors: data.errors,
         })
     }
-    await User.updateOne(req.body,{
-        _id:req.userId
-    })
-
-    res.json({
-        message:'updated succesfully'
-    }) 
+    try {
+        const result = await User.updateOne({
+            _id:req.userId
+        },{
+            $set:data
+        })
+        if (result.acknowledged && result.matchedCount===1) {
+            return res.json({
+                message: 'Updated successfully',
+            });
+        } else {
+            return res.status(404).json({
+                message: 'User not found or no changes made',
+            });
+        }
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(403).json({
+            message:'Internal Server Error'
+        })
+    }
 });
 
 userRouter.get('/bulk',async (req,res) => {

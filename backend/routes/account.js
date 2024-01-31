@@ -69,19 +69,19 @@ accountRouter.post('/transfer',authMiddleware,async(req, res )=>{
     const {amount , to} = req.body;
      
     //finding the account within the sessino
-    const account = await Account.findOne({userId:req.body}).session(session);
-
+    const account = await Account.findOne({userId:req.userId}).session(session);
+    // console.log(req.userId);
     //if any of the condition fails up abort the whole transaction.
     if(!account || account.balance<amount){
         await session.abortTransaction();
-        console.log("Insufficient balance")
+        // console.log("Insufficient balance")
         return res.status(400).json({
             message:"Transaction failed, insuffucient balance"
         });
     }
 
     //finding the reciever is a genuine user, that exists in the database or not within session .
-    const toAccount = await Account.findOne({userId:to}).session(session);
+    const toAccount =    await Account.findOne({userId:to}).session(session);
 
     if(!toAccount){
         await session.abortTransaction();
@@ -92,12 +92,12 @@ accountRouter.post('/transfer',authMiddleware,async(req, res )=>{
     }
 
     //performing up the transactions.
-    await Account.updateOne({userId:req.body},{$inc:{balance: -amount }}).session(session);
+    await Account.updateOne({userId:req.userId},{$inc:{balance: -amount }}).session(session);
     await Account.updateOne({userId:to},{$inc:{balance:amount}}).session(session);
 
     //commit up the transactions
     await session.commitTransaction();
-    console.log("done");
+    // console.log("done");
     res.json({
         message:"Transfer Successful"
     });
