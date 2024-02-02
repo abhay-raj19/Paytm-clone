@@ -1,4 +1,6 @@
+import axios from 'axios';
 import React, { useState } from 'react'
+import { useSearchParams } from 'react-router-dom';
 
 
 
@@ -10,6 +12,9 @@ export default function SendMoney() {
     let numericValue = parseFloat(value);
     (numericValue < 0) ? setAmount('0') :setAmount(value);
   }
+  const [searchParams]  = useSearchParams();
+  const id = searchParams.get("id");
+  const name = searchParams.get("name");
 
 
   return (
@@ -24,9 +29,9 @@ export default function SendMoney() {
                 <div className="p-6">
                 <div className="flex items-center space-x-2">
                     <div className="w-11 h-11 rounded-full bg-green-500 flex items-center justify-center">
-                    <span className="text-2xl text-white">A</span>
+                    <span className="text-2xl text-white">{name[0].toUpperCase()}</span>
                     </div>
-                    <h3 className="text-2xl font-semibold">Friend's Name</h3>
+                    <h3 className="text-2xl font-semibold">{name}</h3>
                 </div>
                 <div className="space-y-4">
                     <div className="space-y-2">
@@ -43,11 +48,21 @@ export default function SendMoney() {
                         placeholder="Enter amount"
                         value={amount}
                         onChange={handleAmountChange}
+                        
+
                     />
                     </div>
-                    <button className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
-                        Initiate Transfer
-                      
+                    <button onClick={()=>{
+                        axios.post("http://localhost:3000/api/v1/account/transfer",{
+                            to:id,
+                            amount:amount
+                        },{
+                           headers:{
+                            Authorization: "Bearer " + localStorage.getItem("token")
+                           } 
+                        })
+                    }} className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
+                        Initiate Transfer                      
                     </button>
                     
                 </div>
