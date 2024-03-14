@@ -1,7 +1,6 @@
 import React from 'react'
 
 export default function Balance({value}) {
-  const 
   return (
     <div className='flex'>
         <div className="font-bold text-lg">Your Balance:</div>
