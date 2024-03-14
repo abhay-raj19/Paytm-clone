@@ -55,7 +55,7 @@
     npm run dev
 ### 💻Access the application:
 
-Open your web browser and go to http://localhost:3000.
+Open your web browser and go to http://localhost:3000/signup
 
 ### 💙Contributing
 🤝 Contributions are welcome! Feel free to open issues and pull requests.
