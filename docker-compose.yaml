@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    environment:
+      - MONGODB_URL=mongodb+srv://abhaytest:1234567890@abhaytest.mtyhqpd.mongodb.net/paytm
+      - PORT=3000
+      - JWT_SECRET=whoareyou
+    ports:
+      - 3000:3000
+  frontend:
+    build: ./frontend
+    ports:
+      - 5173:5173
