@@ -1,5 +1,5 @@
 #1. using the nodejs base image.
-FROM node:16-alpine
+FROM node:20-alpine
 
 #2.Making up the working dir
 WORKDIR /app/frontend
