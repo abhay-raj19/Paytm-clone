@@ -3,6 +3,8 @@ services:
   backend:
     build: ./backend
     container_name: paytm_backend
+    volumes:
+      - ./backend:/app/backend
     environment:
       - MONGODB_URL=mongodb+srv://abhaytest:1234567890@abhaytest.mtyhqpd.mongodb.net/paytm
       - PORT=3000
@@ -12,6 +14,8 @@ services:
   frontend:
     build: ./frontend
     container_name: paytm_frontend
+    volumes:
+      - ./frontend:/app/frontend
     depends_on:
       - backend
     ports:
